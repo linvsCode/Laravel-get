@@ -1,3 +1,42 @@
+## 扩展安装问题
+
+- 根据[jwt 安装文档](https://github.com/tymondesigns/jwt-auth/wiki/Installation)到最终生成密钥时报错
+
+```php
+Method Tymon\JWTAuth\Commands\JWTGenerateCommand::handle() does not exist
+```
+
+存在两种解决方法：
+
+> ①：在5.5中，调用句柄已改为handle而非之前的fire方法，更改命令类中相应方法即可。
+找到vendor/tymon/src/Commands/JWTGenerateCommand.php文件，加上如下代码，即可。 
+```php
+public function handle() { $this->fire(); }
+```
+> ②：修改jwt版本
+
+注释掉```config/app.php```以下代码，即是把之前写的注释掉即可，```aliases```数组中添加的facade无需修改
+```php
+Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class  
+```
+然后执行修改jwt版本
+```php
+composer require tymon/jwt-auth:dev-develop --prefer-source
+```
+将以下代码添加到```config/app.php```的providers中
+```php
+Tymon\JWTAuth\Providers\LaravelServiceProvider::class
+```
+删除原先拷贝的config/jwt.php,重新执行生成
+```php
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+
+```
+最后执行
+```php
+php artisan jwt:secret
+```
+
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
 <p align="center">
