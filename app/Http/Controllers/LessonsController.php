@@ -6,7 +6,7 @@ use App\Lesson;
 use App\Transformer\LessonTransformer;
 use Illuminate\Database\Eloquent\Collection;
 
-class LessonsController extends Controller
+class LessonsController extends ApiController
 {
     protected $lessonTransformer;
 
@@ -28,9 +28,11 @@ class LessonsController extends Controller
     public function show($id)
     {
         $lesson = Lesson::findOrFail($id);
-        return \Response::json([
+        if (empty($lesson)) {
+            return $this->responseNotFound();
+        }
+        return $this->response([
             'status' => 'success',
-            'status_code' => 200,
             'data' => $this->lessonTransformer->transform($lesson),
         ]);
     }
